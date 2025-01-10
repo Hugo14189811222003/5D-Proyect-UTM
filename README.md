@@ -13,9 +13,14 @@ Facilidad de uso: Una interfaz intuitiva y amigable que hace que la aplicación 
 
 Con PetPalz, buscamos fortalecer el vínculo entre humanos y mascotas, promoviendo un cuidado responsable y accesible para todos. 
 
+
 ### Maquetado y prototipo
+
 https://www.figma.com/design/MguDVVhhwQFJ4XYqAecUTG/PetPalz-prototipo?m=auto&t=FMNDjIr5CXnjs6R4-6 
 
+
 ### Integrantes del equipo
+
 Angélica Leticia Mendoza Segura
+
 Hugo Arcos Zúñiga
