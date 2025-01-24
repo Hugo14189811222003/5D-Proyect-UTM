@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:proyect_app/screem/login.dart';
+import 'package:proyect_app/screem/list.dart';
+import 'package:proyect_app/screem/register.dart';
 void main(){
   runApp(MyWidget());
 }
@@ -12,9 +13,10 @@ class MyWidget extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        "login": (_) => const Login()
+        "register": (_) => const Register(),
+        "listInfinity": (_) => const ListaUsuario()
       },
-      initialRoute: "login",
+      initialRoute: "register",
     );
   }
 }
