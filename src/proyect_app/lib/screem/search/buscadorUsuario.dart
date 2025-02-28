@@ -32,7 +32,7 @@ class _BuscarUsuarioState extends State<BuscarUsuario> {
 
       print("Buscando usuario con ID: $idUsuario");
 
-      final usuario = await fetchUsuarioPorId(idUsuario);  // Llamada a la API para obtener el usuario por ID
+      final usuario = await fetchUsuarioPorId(idUsuario);  
       print("Resultado de la búsqueda: $usuario");
 
       setState(() {
@@ -84,8 +84,7 @@ class _BuscarUsuarioState extends State<BuscarUsuario> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Nombre: ${_usuarioEncontrado!.name}', style: TextStyle(fontSize: 18)),
-                      Text('Usuario: ${_usuarioEncontrado!.userName}', style: TextStyle(fontSize: 18)),
+                      Text('Nombre: ${_usuarioEncontrado!.nombre}', style: TextStyle(fontSize: 18)),
                       Text('Correo: ${_usuarioEncontrado!.email}', style: TextStyle(fontSize: 18)),
                       // Mostrar otros campos según sea necesario
                     ],

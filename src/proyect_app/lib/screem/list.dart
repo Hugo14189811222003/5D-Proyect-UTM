@@ -85,7 +85,7 @@ class _ListaUsuarioState extends State<ListaUsuario> {
                 final usuario = _usuariosFiltrados[index];
                 return ListTile(
                   tileColor: const Color.fromARGB(255, 0, 0, 0),
-                  title: Text(usuario.name.isNotEmpty ? usuario.name : 'Nombre no disponible', style: TextStyle(color: const Color.fromARGB(255, 81, 255, 0), fontSize: 20)),
+                  title: Text(usuario.nombre.isNotEmpty ? usuario.nombre : 'Nombre no disponible', style: TextStyle(color: const Color.fromARGB(255, 81, 255, 0), fontSize: 20)),
                   subtitle: Text(usuario.email.isNotEmpty ? usuario.email : 'Correo no disponible', style: TextStyle(color: Colors.white)),
                 );
               },
