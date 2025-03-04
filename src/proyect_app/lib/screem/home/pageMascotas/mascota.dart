@@ -24,6 +24,7 @@ class _mascotasPageState extends State<mascotasPage> {
   List<GetMascota> _filtradoDeMascotas = [];
   int _paginaActual = 1;
   bool _isLoading = false;
+  int? _mascotaSeleccionadaId;
 
   Future<void> _refreshMascota() async {
   setState(() {
@@ -38,11 +39,14 @@ class _mascotasPageState extends State<mascotasPage> {
   });
 }
 
+
+
   @override
   void initState() {
     super.initState();
     loadUserData();
     _obtenerMascotas();
+    obtenerIdGuardado();
     _scrollController.addListener(() {
       if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !_isLoading){
         _obtenerMascotas();
@@ -70,9 +74,24 @@ class _mascotasPageState extends State<mascotasPage> {
   }
 
   Future<void> CambiadorDePagina(GetMascota mascotaSeleccionada) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString("idMascotaforHistorial", mascotaSeleccionada.id.toString());
+
+    setState(() {
+      _mascotaSeleccionadaId = mascotaSeleccionada.id;
+    });
+    
     Navigator.push(context,
-    MaterialPageRoute(builder: (context) => historyAnimals(mascota: mascotaSeleccionada,))
+    MaterialPageRoute(builder: (context) => historyAnimals(mascota: mascotaSeleccionada, mascotaSeleccionadaIdHistorial: _mascotaSeleccionadaId,))
     );
+  }
+
+  Future<void> obtenerIdGuardado() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? idPerroForHistorial = await pref.getString('idMascotaforHistorial');
+    setState(() {
+      _mascotaSeleccionadaId = idPerroForHistorial != null ? int.tryParse(idPerroForHistorial) : null;
+    });
   }
 
   Future<void> _obtenerMascotas() async {
@@ -146,6 +165,7 @@ class _mascotasPageState extends State<mascotasPage> {
                 : SizedBox.shrink();
           }
           final mascotasResponse = _filtradoDeMascotas[index];
+          bool _mascotaSeleccionadaIdHistorial = mascotasResponse.id == _mascotaSeleccionadaId;
           return GestureDetector(
             onTap: () => CambiadorDePagina(mascotasResponse),
             child: Container(

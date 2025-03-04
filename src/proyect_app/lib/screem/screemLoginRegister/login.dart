@@ -19,6 +19,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _focusPassword = false;
   final _focusEmail = false;
+  bool _isPasswordVisible = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
@@ -287,6 +288,7 @@ class _LoginState extends State<Login> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
                                           child: TextFormField(
+                                            
                                             style: TextStyle(color: _isFocus ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode_,
                                             controller: emailController,
@@ -296,6 +298,7 @@ class _LoginState extends State<Login> {
                                               hintStyle: TextStyle(color: _isFocus ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
                                               border: InputBorder.none,
                                               contentPadding: const EdgeInsets.only(left: 0.0),
+                                              errorStyle: TextStyle(color: _isFocus ? Colors.white : Colors.red)
                                             ),
                                             onTap: () {
                                               setState(() {
@@ -331,13 +334,28 @@ class _LoginState extends State<Login> {
                                           child: TextFormField(
                                             style: TextStyle(color: _isFocusPsw ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode2_,
-                                            obscureText: true,
+                                            obscureText: _isPasswordVisible,
                                             controller: passwordController,
                                             decoration: InputDecoration(
-                                              icon: Icon(Icons.lock, color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
+                                              errorStyle: TextStyle(color: _isFocusPsw ? Colors.white : Colors.red),
+                                              icon: Icon(
+                                                Icons.lock,
+                                                color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71),
+                                              ),
                                               hintText: "password",
                                               hintStyle: TextStyle(color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
                                               border: InputBorder.none,
+                                              suffixIcon: IconButton( // Ícono para mostrar/ocultar la contraseña
+                                                icon: Icon(
+                                                  _isPasswordVisible ? Icons.visibility_off : Icons.visibility, // Cambia el ícono
+                                                  color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _isPasswordVisible = !_isPasswordVisible; // Alterna la visibilidad
+                                                  });
+                                                },
+                                              )
                                             ),onTap: () {
                                               setState(() {
                                                 _focusPassword = true;

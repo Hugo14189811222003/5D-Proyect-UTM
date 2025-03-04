@@ -22,6 +22,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController passwordController = TextEditingController();
   bool _isEmailFieldFucoused = false;
   bool _isPasswordFieldFocus = false;
+  bool _isPasswordVisible = true;
   final FocusNode focusNode_ = FocusNode();
   final FocusNode focusNode2_ = FocusNode();
   final FocusNode focusNode3_ = FocusNode();
@@ -52,68 +53,88 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> verifyDataForm() async {
-  if (_formState.currentState!.validate()) {  // Verifica si el formulario es válido primero
-    // Si pasa la validación, proceder con el código
-    String nombre = nameController.text;
-    String email = emailController.text;
-    String contrasena = passwordController.text;
+  if(nameController.text.isNotEmpty && emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
+      if (_formState.currentState!.validate()) {  // Verifica si el formulario es válido primero
+      // Si pasa la validación, proceder con el código
+      String nombre = nameController.text;
+      String email = emailController.text;
+      String contrasena = passwordController.text;
 
-    UsuarioPost newUser = UsuarioPost(
-      nombre: nombre,
-      email: email,
-      contrasena: contrasena
-    );
-
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
-    // Llamar a la API
-    final List<Usuario> dataUsuario = await fetchUsuarios(1);
-
-    final List<Usuario> gmailFiltrado = dataUsuario.where(
-      (emailOfUser) => emailOfUser.email.trim().toLowerCase() == emailController.text.trim().toLowerCase()
-    ).toList();
-
-    if (gmailFiltrado.isEmpty) {
-      // Datos enviados a la API de POST
-      await createAccount(newUser);
-      Navigator.of(context).pop();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('Cuenta creada con éxito'),
-        ),
+      UsuarioPost newUser = UsuarioPost(
+        nombre: nombre,
+        email: email,
+        contrasena: contrasena
       );
-      Navigator.pushReplacementNamed(context, "login");
-    } else {
-      Navigator.of(context).pop();
+
       showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+
+      // Llamar a la API
+      final List<Usuario> dataUsuario = await fetchUsuarios(1);
+
+      final List<Usuario> gmailFiltrado = dataUsuario.where(
+        (emailOfUser) => emailOfUser.email.trim().toLowerCase() == emailController.text.trim().toLowerCase()
+      ).toList();
+
+      if (gmailFiltrado.isEmpty) {
+        // Datos enviados a la API de POST
+        await createAccount(newUser);
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Cuenta creada con éxito'),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, "login");
+      } else {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Problemas con el Gmail"),
+              content: Text("El Gmail ya existe, ingresa otro."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Ok"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      // Si la validación falla, simplemente muestra un error sin hacer nada más
+      print('Formulario no válido');
+    }
+  } else {
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
           return AlertDialog(
-            title: Text("Problemas con el Gmail"),
-            content: Text("El Gmail ya existe, ingresa otro."),
+            title: Text('Error de entreda'),
+            content: Text('Favor de ingresar datos'),
             actions: [
               TextButton(
+                child: Text('Ok'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("Ok"),
-              ),
+              )
             ],
           );
-        },
+        }
       );
-    }
-  } else {
-    // Si la validación falla, simplemente muestra un error sin hacer nada más
-    print('Formulario no válido');
   }
 }
 
@@ -217,10 +238,12 @@ class _RegisterState extends State<Register> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
                                           child: TextFormField(
+                                            maxLength: 15,
                                             style: TextStyle(color: _isFocus ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode_,
                                             controller: nameController,
                                             decoration: InputDecoration(
+                                              errorStyle: TextStyle(color: _isFocus ? Colors.white : Colors.red),
                                               icon: Icon(Icons.person, color: _isFocus ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
                                               hintText: "Nombre",
                                               hintStyle: TextStyle(color: _isFocus ? Color.fromARGB(255, 255, 255, 255) : Color.fromARGB(255, 71, 71, 71)),
@@ -254,10 +277,12 @@ class _RegisterState extends State<Register> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
                                           child: TextFormField(
+                                            keyboardType: TextInputType.emailAddress,
                                             style: TextStyle(color: _isFocusEmail ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode2_,
                                             controller: emailController,
                                             decoration: InputDecoration(
+                                              errorStyle: TextStyle(color: _isFocusEmail ? Colors.white : Colors.red),
                                               icon: Icon(Icons.email, color: _isFocusEmail ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
                                               hintText: "email",
                                               hintStyle: TextStyle(color: _isFocusEmail ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
@@ -303,16 +328,31 @@ class _RegisterState extends State<Register> {
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
-                                          child: TextFormField(
-                                            obscureText: true,
-                                            style: TextStyle(color: _isFocusPsw ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
+                                            child: TextFormField(
+                                            obscureText: _isPasswordVisible, // Controla si el texto está oculto o no
+                                            style: TextStyle(color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode3_,
                                             controller: passwordController,
                                             decoration: InputDecoration(
-                                              icon: Icon(Icons.lock, color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
+                                              errorStyle: TextStyle(color: _isFocusPsw ? Colors.white : Colors.red),
+                                              icon: Icon(
+                                                Icons.lock,
+                                                color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71),
+                                              ),
                                               hintText: "password",
                                               hintStyle: TextStyle(color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71)),
-                                              border: InputBorder.none
+                                              border: InputBorder.none,
+                                              suffixIcon: IconButton( // Ícono para mostrar/ocultar la contraseña
+                                                icon: Icon(
+                                                  _isPasswordVisible ? Icons.visibility_off : Icons.visibility, // Cambia el ícono
+                                                  color: _isFocusPsw ? Colors.white : Color.fromARGB(255, 71, 71, 71),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _isPasswordVisible = !_isPasswordVisible; // Alterna la visibilidad
+                                                  });
+                                                },
+                                              ),
                                             ),
                                             onTap: () {
                                               setState(() {
@@ -320,11 +360,19 @@ class _RegisterState extends State<Register> {
                                               });
                                             },
                                             validator: (value) {
-                                              if(_isPasswordFieldFocus){
-                                                return (value != null && value.length >= 6) ? null : 'La contraseña tiene que ser mayor a 6 caracteres';
+                                              
+                                              if (value!.length < 6) {
+                                                return 'La contraseña tiene que ser mayor a 6 caracteres';
+                                              }
+                                              if (!RegExp(r'[A-Z]').hasMatch(value!)) {
+                                                return 'favor de meter una mayuscula tan siquiera'; 
+                                              }
+                                              if (!RegExp(r'[0-9]').hasMatch(value)) {
+                                                return 'favor de meter una numero tan siquiera';
                                               }
                                             },
                                           ),
+
                                         ),
                                       ),
                                     ),

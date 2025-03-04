@@ -8,6 +8,7 @@ class PostMascota {
   String raza;
   int peso;
   String imagenURL;
+  String genero;
 
   PostMascota({
     required this.usuarioId,
@@ -16,7 +17,8 @@ class PostMascota {
     required this.especie,
     required this.raza,
     required this.peso,
-    required this.imagenURL
+    required this.imagenURL,
+    required this.genero
   });
 
   factory PostMascota.fromJson(Map<String, dynamic> json) {
@@ -27,7 +29,8 @@ class PostMascota {
       especie: json["especie"] ?? "no hay especie",
       raza: json["raza"] ?? "no hay raza",
       peso: (json["peso"] is int) ? json["peso"] : int.tryParse(json["peso"].toString()) ?? 0,
-      imagenURL: json["imagenUrl"] ?? "no hay imagen"
+      imagenURL: json["imagenUrl"] ?? "no hay imagen",
+      genero: json["genero"] ?? "Desconocido",
     );
   }
 
@@ -39,7 +42,8 @@ class PostMascota {
       "raza": raza,
       "peso": peso,
       "imagenUrl": imagenURL,
-      "usuarioId": usuarioId
+      "usuarioId": usuarioId,
+      "genero": genero,
     };
   }
 }
@@ -53,6 +57,7 @@ class GetMascota {
   String raza;
   int peso;
   String imagenURL;
+  String genero;
 
   GetMascota({
     required this.id,
@@ -62,7 +67,8 @@ class GetMascota {
     required this.especie,
     required this.raza,
     required this.peso,
-    required this.imagenURL
+    required this.imagenURL,
+    required this.genero
   });
 
   factory GetMascota.fromJson(Map<String, dynamic> json) {
@@ -74,7 +80,10 @@ class GetMascota {
       especie: json["especie"] ?? "no hay especie",
       raza: json["raza"] ?? "no hay raza",
       peso: (json["peso"] is int) ? json["peso"] : int.tryParse(json["peso"].toString()) ?? 0,
-      imagenURL: json["imagenUrl"] ?? "no hay imagen"
+      imagenURL: json["imagenUrl"] ?? "no hay imagen",
+      genero: json["genero"] ?? "Desconocido",
     );
   }
+
+  where(bool Function(dynamic element) param0) {}
 }

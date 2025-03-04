@@ -22,7 +22,7 @@ Future<void> crearHistorialMedico(postHistorialMedico historial) async {
 }
 
 Future<List<getHistorialMedico>> getHistorialMedicoApi(int page) async {
-  final url = Uri.parse("https://petpalzapi.onrender.com/api/HistorialMedico?page=$page");
+  final url = Uri.parse("https://petpalzapi.onrender.com/api/HistorialMedico?pageNumber=$page&pageSize=10000");
   final response = await http.get(url);
   print("estado ${response.statusCode}: ${response.body}");
 

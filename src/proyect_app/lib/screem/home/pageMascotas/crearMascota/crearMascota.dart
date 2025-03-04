@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:proyect_app/Apis/apiMascota.dart';
 import 'package:proyect_app/models/modeloMascota.dart';
 import 'package:intl/intl.dart';
+import 'package:proyect_app/models/models.dart';
+import 'package:proyect_app/models/recordatorioModelo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -18,6 +20,28 @@ class Crearmascota extends StatefulWidget {
 }
 
 class _CrearmascotaState extends State<Crearmascota> {
+  final List<String> razas = [
+    // Grupo 1: Pastores y boyeros
+    "Pastor Alemán", "Border Collie", "Pastor Belga", "Pastor Australiano",
+    // Grupo 2: Molosos
+    "Rottweiler", "Dogo Argentino", "Gran Danés", "San Bernardo",
+    // Grupo 3: Terriers
+    "Jack Russell Terrier", "Bull Terrier", "Yorkshire Terrier",
+    // Grupo 4: Teckel
+    "Teckel Estándar", "Teckel Miniatura",
+    // Grupo 5: Spitz y primitivos
+    "Husky Siberiano", "Samoyedo", "Chow Chow", "Akita Inu",
+    // Grupo 6: Sabuesos
+    "Beagle", "Basset Hound", "Bloodhound",
+    // Grupo 7: Perros de muestra
+    "Braco Alemán", "Pointer Inglés", "Setter Irlandés",
+    // Grupo 8: Cobradores y de agua
+    "Labrador Retriever", "Golden Retriever", "Cocker Spaniel",
+    // Grupo 9: Compañía
+    "Poodle", "Chihuahua", "Pug", "Bichón Maltés", "Bulldog Francés",
+    // Grupo 10: Lebreles
+    "Galgo Español", "Whippet", "Lebrel Afgano"
+  ];
     File? _image;
 
     Future<void> _pickImage() async {
@@ -55,6 +79,11 @@ class _CrearmascotaState extends State<Crearmascota> {
   bool _isFocusPeso = false;
   bool _isFocusTamano = false;
   bool _isFocusFechaDeNacimiento = false;
+
+  Future<void> guardarGenero(int mascotaId, String genero) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('genero_$mascotaId', genero);
+}
 
   @override
   void initState() {
@@ -141,6 +170,7 @@ class _CrearmascotaState extends State<Crearmascota> {
         int peso = int.tryParse(_pesoController.text) ?? 0;
         DateFormat formato = DateFormat("dd-MM-yyyy");
         DateTime fechaNacimiento = formato.parse(fechaDeNacimiento);
+        String genero = _generoController.text;
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? userIdString = prefs.getString('id');
@@ -154,10 +184,12 @@ class _CrearmascotaState extends State<Crearmascota> {
           especie: especie,
           raza: raza,
           peso: peso,
-          imagenURL: "https://th.bing.com/th/id/OIP.rI4-WtIPuAZERhJlUNk9IgHaE8?w=724&h=483&rs=1&pid=ImgDetMain"
+          imagenURL: "https://th.bing.com/th/id/OIP.rI4-WtIPuAZERhJlUNk9IgHaE8?w=724&h=483&rs=1&pid=ImgDetMain",
+          genero: genero
         );
 
         await crearMascota(mascota);
+        await guardarGenero(mascota.usuarioId , genero);
 
           ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -177,6 +209,7 @@ class _CrearmascotaState extends State<Crearmascota> {
         _pesoController.clear();
         _tamanoController.clear();
         _fechaController.clear();
+        _generoController.clear();
       } else {
         print("Dato no mandado");
       }
@@ -242,6 +275,7 @@ class _CrearmascotaState extends State<Crearmascota> {
                                 borderRadius: BorderRadius.circular(10)
                               ),
                               child: TextFormField(
+                                maxLength: 10,
                                 controller: _nameController,
                                 focusNode: focusNode_,
                                 style: TextStyle(),
@@ -269,23 +303,28 @@ class _CrearmascotaState extends State<Crearmascota> {
                                 border: Border.all(color: const Color.fromARGB(255, 0, 77, 58), width: 1),
                                 borderRadius: BorderRadius.circular(10)
                               ),
-                              child: TextFormField(
-                                controller: _especieController,
-                                focusNode: focusNode2_,
-                                style: TextStyle(),
-                                decoration: InputDecoration(
-                                  hintText: "Especie",
-                                  hintStyle: TextStyle(color: _isFocusEspecie ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.only(left: 0.0),
-                                ),
-                                onTap: () {
+                              child: DropdownButtonFormField<String>(
+                                value: _especieController.text.isNotEmpty ? _especieController.text : null,
+                                items: ["Perro", "Gato"].map((String especie) {
+                                  return DropdownMenuItem<String>(
+                                    value: especie,
+                                    child: Text(especie),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
                                   setState(() {
-                                    _isFocusEspecie = true;
+                                    _especieController.text = newValue!;
                                   });
                                 },
+                                decoration: InputDecoration(
+                                  hintText: "Especie",
+                                  border: InputBorder.none,
+                                ),
                                 validator: (value) {
-                                  return(value != null) ? null : "Esta vacio, ingrese datos";
+                                  if (value == null || value.isEmpty) {
+                                    return "Seleccione una opción";
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -299,21 +338,33 @@ class _CrearmascotaState extends State<Crearmascota> {
                               ),
                               child: TextFormField(
                                 controller: _razaController,
-                                focusNode: focusNode3_,
-                                style: TextStyle(),
+                                maxLength: 25, // Máximo 25 caracteres
                                 decoration: InputDecoration(
-                                  hintText: "Raza",
-                                  hintStyle: TextStyle(color: _isFocusRaza ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
-                                  border: InputBorder.none,
+                                  hintText: "Escriba o seleccione la raza",
+                                  border: InputBorder.none, // 🔹 Sin contorno
                                   contentPadding: EdgeInsets.only(left: 0.0),
+                                  suffixIcon: PopupMenuButton<String>(
+                                    icon: Icon(Icons.arrow_drop_down),
+                                    onSelected: (String value) {
+                                      setState(() {
+                                        _razaController.text = value;
+                                      });
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      return razas.map((String raza) {
+                                        return PopupMenuItem<String>(
+                                          value: raza,
+                                          child: Text(raza),
+                                        );
+                                      }).toList();
+                                    },
+                                  ),
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    _isFocusRaza = true;
-                                  });
-                                },
                                 validator: (value) {
-                                  return(value != null) ? null : "Esta vacio, ingrese datos";
+                                  if (value == null || value.isEmpty) {
+                                    return "Seleccione o escriba una raza";
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -328,23 +379,34 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       border: Border.all(color: const Color.fromARGB(255, 0, 77, 58), width: 1),
                                       borderRadius: BorderRadius.circular(10)
                                     ),
-                                    child: TextFormField(
-                                      controller: _generoController,
-                                      focusNode: focusNode4_,
-                                      style: TextStyle(),
-                                      decoration: InputDecoration(
-                                        hintText: "Genero",
-                                        hintStyle: TextStyle(color: _isFocusGenero ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(left: 0.0),
-                                      ),
-                                      onTap: () {
+                                    child: DropdownButtonFormField<String>(
+                                      value: _generoController.text.isNotEmpty ? _generoController.text : null,
+                                      items: ["Macho", "Hembra"].map((String genero) {
+                                        return DropdownMenuItem<String>(
+                                          value: genero,
+                                          child: Text(genero),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
                                         setState(() {
-                                          _isFocusGenero = true;
+                                          _generoController.text = newValue!;
                                         });
                                       },
+                                      decoration: InputDecoration(
+                                        hintText: "Género",
+                                        hintStyle: TextStyle(
+                                          color: _isFocusGenero
+                                              ? const Color.fromARGB(255, 72, 72, 72)
+                                              : Color.fromARGB(255, 71, 71, 71)
+                                        ),
+                                        border: InputBorder.none, // Sin contorno
+                                        contentPadding: EdgeInsets.only(left: 0.0),
+                                      ),
                                       validator: (value) {
-                                        return(value != null) ? null : "Esta vacio, ingrese datos";
+                                        if (value == null || value.isEmpty) {
+                                          return "Seleccione un género";
+                                        }
+                                        return null;
                                       },
                                     ),
                                   ),
@@ -359,6 +421,7 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       borderRadius: BorderRadius.circular(10)
                                     ),
                                     child: TextFormField(
+                                      maxLength: 10,
                                       controller: _colorController,
                                       focusNode: focusNode5_,
                                       style: TextStyle(),
@@ -389,6 +452,7 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       borderRadius: BorderRadius.circular(10)
                                     ),
                                     child: TextFormField(
+                                      maxLength: 3,
                                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                                       controller: _pesoController,
                                       focusNode: focusNode6_,
@@ -424,11 +488,13 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       borderRadius: BorderRadius.circular(10)
                                     ),
                                     child: TextFormField(
+                                      maxLength: 3,
+                                      keyboardType: TextInputType.numberWithOptions(decimal: true),
                                       controller: _tamanoController,
                                       focusNode: focusNode7_,
                                       style: TextStyle(),
                                       decoration: InputDecoration(
-                                        hintText: "Tamaño",
+                                        hintText: "Tamaño en cm",
                                         hintStyle: TextStyle(color: _isFocusTamano ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
                                         border: InputBorder.none,
                                         contentPadding: EdgeInsets.only(left: 0.0),
@@ -485,7 +551,11 @@ class _CrearmascotaState extends State<Crearmascota> {
                             ),
                             SizedBox(height: 12,),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async{
+                                if(_image == null) {
+                                  print("no hay imagen error");
+                                  return;
+                                }
                                 inserMascota();
                               },
                               child: Container(

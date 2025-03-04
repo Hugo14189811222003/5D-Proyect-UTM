@@ -10,9 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class historyAnimals extends StatefulWidget {
   final GetMascota mascota;
-  
+  final mascotaSeleccionadaIdHistorial;
 
-  const historyAnimals({super.key, required this.mascota});
+  const historyAnimals({super.key, required this.mascota, this.mascotaSeleccionadaIdHistorial});
 
   @override
   State<historyAnimals> createState() => _historyAnimalsState();
@@ -44,6 +44,12 @@ class _historyAnimalsState extends State<historyAnimals> {
   }
 }
 
+
+
+  Future<String> obtenerGenero(int mascotaId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('genero_$mascotaId') ?? "Desconocido"; // Si no existe, devuelve "Desconocido"
+  }
 
   Future<void> ObtenerCurrentIndex() async{
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -126,19 +132,26 @@ class _historyAnimalsState extends State<historyAnimals> {
                       );
                     }
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                    width: MediaQuery.of(context).size.width * 0.1,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 245, 118, 173),
-                      borderRadius: BorderRadius.circular(10),
-                      
-                    ),
-                    child: Icon(
-                      Icons.woman, 
-                      color: Colors.white, 
-                      size: MediaQuery.of(context).size.width * 0.07
-                    ),
+                  FutureBuilder<String>(
+                    future: obtenerGenero(widget.mascota.id),
+                    builder: (context, snapshot) {
+                      String generoMascota = snapshot.data ?? "Desconocido";
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        decoration: BoxDecoration(
+                          color: generoMascota == "Hembra" ? const Color.fromARGB(255, 245, 118, 173) 
+                          : generoMascota == "Macho" ? Colors.blue : Colors.grey,
+                          borderRadius: BorderRadius.circular(10),
+                          
+                        ),
+                        child: Icon(
+                          generoMascota == "Hembra" ? Icons.woman : generoMascota == "Macho" ? Icons.man : Icons.pets, 
+                          color: Colors.white, 
+                          size: MediaQuery.of(context).size.width * 0.07
+                        ),
+                      );
+                    }
                   )
                 ],
               ),
@@ -308,7 +321,7 @@ class _historyAnimalsState extends State<historyAnimals> {
                                   onTap:() {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const Historialmedico())
+                                      MaterialPageRoute(builder: (context) => Historialmedico(mascota: widget.mascota, mascotaSeleccionadaIdHistorial: widget.mascotaSeleccionadaIdHistorial,))
                                     );
                                   },
                                 )
