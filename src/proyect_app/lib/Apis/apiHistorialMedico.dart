@@ -40,3 +40,47 @@ Future<List<getHistorialMedico>> getHistorialMedicoApi(int page) async {
     throw Exception("No se pudo obtener la información. Estado: ${response.statusCode}");
   }
 }
+
+Future<void> actualizarHistorialMedico(int id, postHistorialMedico historial) async {
+  try {
+    final uri = Uri.parse("https://petpalzapi.onrender.com/api/HistorialMedico/$id");
+
+    print("JSON enviado: ${json.encode(historial.toJson())}");
+    final response = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(historial.toJson()),
+    ).timeout(Duration(seconds: 10));
+
+    print("Estado de respuesta ${response.statusCode}: ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print("Historial médico actualizado con éxito");
+    } else {
+      print("Problemas al actualizar el historial médico");
+    }
+  } catch (err) {
+    throw Exception('Error de servidor: $err');
+  }
+}
+
+Future<void> eliminarHistorialMedico(int id) async {
+  try {
+    final uri = Uri.parse("https://petpalzapi.onrender.com/api/HistorialMedico/$id");
+
+    final response = await http.delete(
+      uri,
+      headers: {"Content-Type": "application/json"},
+    ).timeout(Duration(seconds: 10));
+
+    print("Estado de respuesta ${response.statusCode}: ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print("Historial médico eliminado con éxito");
+    } else {
+      print("Problemas al eliminar el historial médico");
+    }
+  } catch (err) {
+    throw Exception('Error de servidor: $err');
+  }
+}

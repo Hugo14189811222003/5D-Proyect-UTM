@@ -313,7 +313,7 @@ class _verticalBodyState extends State<verticalBody> {
                       hora: hora
                     );
 
-                    await updateRecordatorios(recordatorioUpdate, id);
+                    await updateRecordatorios(recordatorioUpdate as Recordatorio, id);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Dato actualizado con exito"),

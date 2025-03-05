@@ -6,6 +6,9 @@ import 'package:proyect_app/Apis/apiHistorialMedico.dart';
 import 'package:proyect_app/Apis/apiMascota.dart';
 import 'package:proyect_app/models/modeloHistorialMedico.dart';
 import 'package:proyect_app/models/modeloMascota.dart';
+import 'package:proyect_app/screem/home/pageMascotas/hestoyAnimals/historialMedico/verTodoHistorial/verEnfermedades.dart';
+import 'package:proyect_app/screem/home/pageMascotas/hestoyAnimals/historialMedico/verTodoHistorial/verTratamientos.dart';
+import 'package:proyect_app/screem/home/pageMascotas/hestoyAnimals/historialMedico/verTodoHistorial/verVacunas.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Historialmedico extends StatefulWidget {
@@ -269,6 +272,21 @@ Future<void> obtenerRegistrosTratamientos() async {
       tratamiento: _tratamiento!
     );
     crearHistorialMedico(historialMedico);
+
+    setState(() {
+      _filtrarEnfermedades.clear();
+      _filtrarTratamientos.clear();
+      _filtrarVacunas.clear();
+      _historialEnfermedades.clear();
+      _historialTratamientos.clear();
+      _historialVacunas.clear();
+      _paginaEnfermedades = 1;
+      _paginaTratamientos = 1;
+      _paginaVacunas = 1;
+    });
+    obtenerRegistrosVacunas();
+    obtenerRegistrosEnfermedades();
+    obtenerRegistrosTratamientos();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.green,
@@ -613,21 +631,28 @@ Future<void> obtenerRegistrosTratamientos() async {
                                 ),
                                 Row(
                                   children: [
-                                    Text("Ver todo", 
-                                    style: GoogleFonts.fredoka(
-                                      color: const Color.fromARGB(255, 83, 68, 141),
-                                      fontWeight: FontWeight.w500
-                                      ),
-                                    ),
-                                    SizedBox(width: screenWidthConnstrain * 0.025,),
                                     GestureDetector(
                                       onTap: () {
-                                        
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => verVacunas(idMascotaSeleccionadaParaHistorial: widget.mascotaSeleccionadaIdHistorial,))
+                                        );
                                       },
-                                      child: const Icon(
-                                        Icons.arrow_forward,
-                                        color: Color.fromARGB(255, 83, 68, 141),
-                                        ),
+                                      child: Row(
+                                        children: [
+                                          Text("Ver todo", 
+                                          style: GoogleFonts.fredoka(
+                                            color: const Color.fromARGB(255, 83, 68, 141),
+                                            fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidthConnstrain * 0.025,),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: Color.fromARGB(255, 83, 68, 141),
+                                          ),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 )
@@ -734,21 +759,28 @@ Future<void> obtenerRegistrosTratamientos() async {
                                 ),
                                 Row(
                                   children: [
-                                    Text("Ver todo", 
-                                    style: GoogleFonts.fredoka(
-                                      color: const Color.fromARGB(255, 83, 68, 141),
-                                      fontWeight: FontWeight.w500
-                                      ),
-                                    ),
-                                    SizedBox(width: screenWidthConnstrain * 0.025,),
                                     GestureDetector(
                                       onTap: () {
-                                        
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => verEnfermedades(idMascotaSeleccionadaParaHistorial: widget.mascotaSeleccionadaIdHistorial,))
+                                        );
                                       },
-                                      child: const Icon(
-                                        Icons.arrow_forward,
-                                        color: Color.fromARGB(255, 83, 68, 141),
-                                        ),
+                                      child: Row(
+                                        children: [
+                                          Text("Ver todo", 
+                                          style: GoogleFonts.fredoka(
+                                            color: const Color.fromARGB(255, 83, 68, 141),
+                                            fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidthConnstrain * 0.025,),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: Color.fromARGB(255, 83, 68, 141),
+                                          ),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 )
@@ -853,21 +885,28 @@ Future<void> obtenerRegistrosTratamientos() async {
                                 ),
                                 Row(
                                   children: [
-                                    Text("Ver todo", 
-                                    style: GoogleFonts.fredoka(
-                                      color: const Color.fromARGB(255, 83, 68, 141),
-                                      fontWeight: FontWeight.w500
-                                      ),
-                                    ),
-                                    SizedBox(width: screenWidthConnstrain * 0.025,),
                                     GestureDetector(
                                       onTap: () {
-                                        
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => verTratamientos(idMascotaSeleccionadaParaHistorial: widget.mascotaSeleccionadaIdHistorial,))
+                                        );
                                       },
-                                      child: const Icon(
-                                        Icons.arrow_forward,
-                                        color: Color.fromARGB(255, 83, 68, 141),
-                                        ),
+                                      child: Row(
+                                        children: [
+                                          Text("Ver todo", 
+                                          style: GoogleFonts.fredoka(
+                                            color: const Color.fromARGB(255, 83, 68, 141),
+                                            fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidthConnstrain * 0.025,),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: Color.fromARGB(255, 83, 68, 141),
+                                          ),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 )

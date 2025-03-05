@@ -50,7 +50,7 @@ Future<List<RecordatorioGet>> ObtenerRecordatorios(int page) async {
   }
 }
 
-Future<void> updateRecordatorios(RecordatorioUpdate recordatorio, int id) async {
+Future<void> updateRecordatorios(Recordatorio recordatorio, int id) async {
   final url = Uri.parse("https://petpalzapi.onrender.com/api/Recordatorio/$id");
   print("url parseado?: ${url}");
   try{

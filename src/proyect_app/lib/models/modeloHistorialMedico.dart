@@ -31,12 +31,14 @@ class postHistorialMedico {
 }
 
 class getHistorialMedico {
+  int id;
   int mascotaId;
   String vacunas;
   String enfermedades;
   String tratamientos;
 
   getHistorialMedico({
+    required this.id,
     required this.mascotaId,
     required this.vacunas,
     required this.enfermedades,
@@ -45,6 +47,7 @@ class getHistorialMedico {
 
   factory getHistorialMedico.fromJson(Map<String, dynamic> json) {
     return getHistorialMedico(
+      id: json["id"] ?? 0,
       mascotaId: json["mascotaId"] ?? 0,
       vacunas: json["vacunas"] ?? "no hay vacunas",
       enfermedades: json["enfermedades"] ?? "no hay enfermedades",
