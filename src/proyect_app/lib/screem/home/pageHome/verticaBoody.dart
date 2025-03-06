@@ -127,9 +127,11 @@ class _verticalBodyState extends State<verticalBody> {
     } catch(err) {
       print("❌ Error al obtener registros: $err");
     } finally {
-      setState(() {
-        _isloading = false;
-      });
+      if(mounted) {
+        setState(() {
+          _isloading = false;
+        });
+      }
     }
   } 
   Future<void> insertaRecordatorio() async {

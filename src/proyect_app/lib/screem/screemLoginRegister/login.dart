@@ -505,7 +505,7 @@ class _LoginState extends State<Login> {
                       child: BounceInDown(
                         duration: const Duration(milliseconds: 1100),
                         child: Image.network(
-                          'https://cielodemascotas.com/wp-content/uploads/2022/03/cropped-logo-cielo-de-mascotas-01-1.png',
+                          'https://firebasestorage.googleapis.com/v0/b/sample-firebase-ai-app-b53ae.firebasestorage.app/o/logo-full.png?alt=media&token=14a5059f-d9bc-4765-91a4-9dadb823eddb',
                           fit: BoxFit.contain,
                           width: landScape ? screemWidth * 0.1 : screemWidth * 0.1,
                           height: landScape ? screemWidth * 0.1 : screemWidth * 0.1,

@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:proyect_app/firebase_options.dart';
 import 'package:proyect_app/screem/home/home.dart';
 import 'package:proyect_app/screem/home/horizontalBody.dart';
 import 'package:proyect_app/screem/home/pageGu%C3%ADas/verticalGuiasBody.dart';
@@ -17,8 +19,12 @@ import 'package:proyect_app/screem/screemSaludos/screemSet2.dart';
 import 'package:proyect_app/screem/screemSaludos/screemSet3.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
   // Bloquear la orientación en modo vertical
   SystemChrome.setPreferredOrientations([

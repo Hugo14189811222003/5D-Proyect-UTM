@@ -7,6 +7,9 @@ import 'package:proyect_app/models/modeloMascota.dart';
 import 'package:intl/intl.dart';
 import 'package:proyect_app/models/models.dart';
 import 'package:proyect_app/models/recordatorioModelo.dart';
+import 'package:proyect_app/screem/home/navigationBottomBar.dart';
+import 'package:proyect_app/screem/home/pageMascotas/mascota.dart';
+import 'package:proyect_app/services/upload_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -176,40 +179,47 @@ class _CrearmascotaState extends State<Crearmascota> {
         String? userIdString = prefs.getString('id');
         int? userId = userIdString != null ? int.tryParse(userIdString) : null;
         print("ID Recuperado: ${userId}");
-        
-        PostMascota mascota = PostMascota(
-          usuarioId: userId ?? 0,
-          nombre: nombre,
-          fechaNacimiento: fechaNacimiento,
-          especie: especie,
-          raza: raza,
-          peso: peso,
-          imagenURL: "https://th.bing.com/th/id/OIP.rI4-WtIPuAZERhJlUNk9IgHaE8?w=724&h=483&rs=1&pid=ImgDetMain",
-          genero: genero
-        );
 
-        await crearMascota(mascota);
-        await guardarGenero(mascota.usuarioId , genero);
+        final String? imageUrl = await uploadImage(_image!);
+        if(imageUrl != null) {
+          PostMascota mascota = PostMascota(
+            usuarioId: userId ?? 0,
+            nombre: nombre,
+            fechaNacimiento: fechaNacimiento,
+            especie: especie,
+            raza: raza,
+            peso: peso,
+            imagenURL: imageUrl,
+            genero: genero
+          );
+          await crearMascota(mascota);
+          await guardarGenero(mascota.usuarioId, genero);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 0, 114, 13),
-            content: Column(
-              children: [
-                Text("Mascota registrada con exito", style: GoogleFonts.fredoka(color: const Color.fromARGB(255, 255, 255, 255)))
-              ],
-            ),
-          )
-        );
-        _nameController.clear();
-        _especieController.clear();
-        _razaController.clear();
-        _generoController.clear();
-        _colorController.clear();
-        _pesoController.clear();
-        _tamanoController.clear();
-        _fechaController.clear();
-        _generoController.clear();
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: const Color.fromARGB(255, 0, 114, 13),
+              content: Column(
+                children: [
+                  Text("Mascota registrada con exito", style: GoogleFonts.fredoka(color: const Color.fromARGB(255, 255, 255, 255)))
+                ],
+              ),
+            )
+          );
+
+          Navigator.pop(context);
+
+          _nameController.clear();
+          _especieController.clear();
+          _razaController.clear();
+          _generoController.clear();
+          _colorController.clear();
+          _pesoController.clear();
+          _tamanoController.clear();
+          _fechaController.clear();
+          _generoController.clear();
+        } else {
+          print("No se pudo obtener el Url de la imagen");
+        }
       } else {
         print("Dato no mandado");
       }
@@ -219,8 +229,10 @@ class _CrearmascotaState extends State<Crearmascota> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
         backgroundColor: const Color.fromARGB(255, 0, 132, 103),
         toolbarHeight: 70,
         title: Text("Añadir mascota", style: GoogleFonts.fredoka(color: Colors.white),),

@@ -114,9 +114,11 @@ class _mascotasPageState extends State<mascotasPage> {
     } catch (err) {
       print("error con el servidor");
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
   @override
