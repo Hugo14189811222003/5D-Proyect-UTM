@@ -3,12 +3,14 @@ import 'package:intl/intl.dart';
 class PostMascota {
   int usuarioId;
   String nombre;
-  DateTime fechaNacimiento;  // ⬅ Cambiar a DateTime
+  String fechaNacimiento;  // ⬅ Cambiar a DateTime
   String especie;
   String raza;
   int peso;
   String imagenURL;
   String genero;
+  String tamano;
+  String color;
 
   PostMascota({
     required this.usuarioId,
@@ -18,14 +20,18 @@ class PostMascota {
     required this.raza,
     required this.peso,
     required this.imagenURL,
-    required this.genero
+    required this.genero,
+    required this.tamano,
+    required this.color
   });
 
   factory PostMascota.fromJson(Map<String, dynamic> json) {
     return PostMascota(
+      color: json["color"] ?? "sin color",
+      tamano: json ["tamano"] ?? "sin tamaño",
       usuarioId: json["usuarioId"] ?? 0,
       nombre: json["nombre"] ?? "no hay nombre",
-      fechaNacimiento: DateTime.tryParse(json["fechaNacimiento"] ?? "") ?? DateTime.now(), // ⬅ Convertir a DateTime
+      fechaNacimiento: json["anoNacimiento"] ?? "no hay año de nacimiento", // ⬅ Convertir a DateTime
       especie: json["especie"] ?? "no hay especie",
       raza: json["raza"] ?? "no hay raza",
       peso: (json["peso"] is int) ? json["peso"] : int.tryParse(json["peso"].toString()) ?? 0,
@@ -37,13 +43,15 @@ class PostMascota {
   Map<String, dynamic> toJson() {
     return {
       "nombre": nombre,
-      "fechaNacimiento": fechaNacimiento.toIso8601String(),  // ⬅ Convertir a ISO 8601
+      "anoNacimiento": fechaNacimiento,  
       "especie": especie,
       "raza": raza,
       "peso": peso,
       "imagenUrl": imagenURL,
       "usuarioId": usuarioId,
       "genero": genero,
+      "tamano": tamano,
+      "color": color
     };
   }
 }
@@ -52,14 +60,18 @@ class GetMascota {
   int id;
   int usuarioId;
   String nombre;
-  DateTime fechaNacimiento;  // ⬅ Cambiar a DateTime
+  String fechaNacimiento; 
   String especie;
   String raza;
   int peso;
   String imagenURL;
   String genero;
+  String tamano;
+  String color;
 
   GetMascota({
+    required this.color,
+    required this.tamano,
     required this.id,
     required this.usuarioId,
     required this.nombre,
@@ -73,10 +85,12 @@ class GetMascota {
 
   factory GetMascota.fromJson(Map<String, dynamic> json) {
     return GetMascota(
+      color: json["color"] ?? "no hay color",
+      tamano: json["tamano"] ?? "no hay tamaño",
       id: json["id"],
       usuarioId: json["usuarioId"],
       nombre: json["nombre"] ?? "no hay nombre",
-      fechaNacimiento: DateTime.tryParse(json["fechaNacimiento"] ?? "") ?? DateTime.now(), // ⬅ Convertir a DateTime
+      fechaNacimiento: json["anoNacimiento"] ?? "no hay año de nacimiento",
       especie: json["especie"] ?? "no hay especie",
       raza: json["raza"] ?? "no hay raza",
       peso: (json["peso"] is int) ? json["peso"] : int.tryParse(json["peso"].toString()) ?? 0,

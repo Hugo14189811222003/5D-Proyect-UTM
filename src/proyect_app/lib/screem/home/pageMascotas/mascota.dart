@@ -1,10 +1,11 @@
 import 'dart:async';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proyect_app/Apis/apiMascota.dart';
 import 'package:proyect_app/models/modeloMascota.dart';
+import 'package:proyect_app/screem/home/pageMascotas/crearMascota/actuzalizarMascota.dart';
 import 'package:proyect_app/screem/home/pageMascotas/crearMascota/crearMascota.dart';
 import 'package:proyect_app/screem/home/pageMascotas/hestoyAnimals/historyAnimals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,6 +122,107 @@ class _mascotasPageState extends State<mascotasPage> {
       }
     }
   }
+
+  Future<void> _eliminarMascota(int mascotaId) async {
+  print("🗑️ Intentando eliminar la mascota con ID: $mascotaId...");
+
+  try {
+    await eliminarMascotaAPI(mascotaId);
+    setState(() {
+      _filtradoDeMascotas.removeWhere((mascota) => mascota.id == mascotaId);
+    });
+    print("✅ Mascota eliminada correctamente.");
+  } catch (err) {
+    print("❌ Error al eliminar la mascota: $err");
+  }
+}
+
+void _actualizarMascota(int mascotaId) async {
+  // Mostrar cargador
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Evita que se cierre al tocar fuera
+    builder: (context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 10),
+            Text("Preparando para actualizar", style: GoogleFonts.fredoka()),
+          ],
+        ),
+      );
+    },
+  );
+
+  try {
+    List<GetMascota> mascotas = await getMascota(1);
+
+    GetMascota? mascotaSeleccionada = mascotas.firstWhereOrNull((m) => m.id == mascotaId);
+
+    Navigator.pop(context); // Cerrar el diálogo de carga
+
+    if (mascotaSeleccionada != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Actualizarmascota(mascota: mascotaSeleccionada),
+        ),
+      );
+    } else {
+      print("⚠️ No se encontró la mascota con ID: $mascotaId");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("⚠️ Mascota no encontrada"))
+      );
+    }
+  } catch (error) {
+    Navigator.pop(context); // Cerrar cargador si hay error
+    print("❌ Error al obtener la mascota: $error");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("❌ Error al cargar la mascota"))
+    );
+  }
+}
+
+
+  void _mostrarOpcionesEliminar(int mascotaId) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("¿Que quieres hacer?", style: GoogleFonts.fredoka(fontSize: 18)),
+            SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar modal
+                _eliminarMascota(mascotaId); // Llamar a la función de eliminación
+              },
+              icon: Icon(Icons.delete, color: Colors.white),
+              label: Text("Eliminar", style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar modal
+                _actualizarMascota(mascotaId); 
+              },
+              icon: Icon(Icons.update, color: Colors.white),
+              label: Text("Actualizar", style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 0, 163, 204)),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
 
@@ -170,6 +272,7 @@ class _mascotasPageState extends State<mascotasPage> {
           bool _mascotaSeleccionadaIdHistorial = mascotasResponse.id == _mascotaSeleccionadaId;
           return GestureDetector(
             onTap: () => CambiadorDePagina(mascotasResponse),
+            onLongPress: () => _mostrarOpcionesEliminar(mascotasResponse.id!),
             child: Container(
               margin: EdgeInsets.all(9),
               decoration: BoxDecoration(

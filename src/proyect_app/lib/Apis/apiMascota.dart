@@ -41,3 +41,51 @@ Future<List<GetMascota>> getMascota(int page) async {
     throw Exception("No se pudo obtener la información. Estado: ${response.statusCode}");
   }
 }
+
+
+Future<void> eliminarMascotaAPI(int mascotaId) async {
+  final String apiUrl = 'https://petpalzapi.onrender.com/api/mascota/$mascotaId';
+
+  try {
+    final uri = Uri.parse(apiUrl);
+    final response = await http.delete(uri, headers: {"Content-Type": "application/json"});
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print("✅ Mascota eliminada con éxito.");
+    } else {
+      print("❌ Error al eliminar la mascota: ${response.statusCode} - ${response.body}");
+      throw Exception("Error al eliminar la mascota.");
+    }
+  } catch (err) {
+    print("⚠️ Error de conexión: $err");
+    throw Exception("Error de conexión al intentar eliminar la mascota.");
+  }
+}
+
+
+
+Future<void> actualizarMascota(int mascotaId, PostMascota mascota) async {
+  final String apiUrl = 'https://petpalzapi.onrender.com/api/mascota/$mascotaId';
+
+  try {
+    final uri = Uri.parse(apiUrl);
+    final response = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(mascota.toJson()),
+    );
+
+    print("Estado de respuesta ${response.statusCode} : ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print("✅ Mascota actualizada con éxito.");
+    } else {
+      print("❌ Error al actualizar la mascota: ${response.statusCode} - ${response.body}");
+      throw Exception("Error al actualizar la mascota.");
+    }
+  } catch (err) {
+    print("⚠️ Error de conexión: $err");
+    throw Exception("Error de conexión al intentar actualizar la mascota.");
+  }
+}
+

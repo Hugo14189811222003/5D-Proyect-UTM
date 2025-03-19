@@ -10,8 +10,8 @@ import 'package:proyect_app/screem/home/pageUbicacion/ubicacion.dart';
 class monitoreAnimal extends StatefulWidget {
   final screenWidth;
   final screenHeight;
-
-  const monitoreAnimal({super.key, this.screenWidth, this.screenHeight});
+  final mascotaSeleccionadaIdHistorial;
+  const monitoreAnimal({super.key, this.screenWidth, this.screenHeight, this.mascotaSeleccionadaIdHistorial});
 
   @override
   State<monitoreAnimal> createState() => _monitoreAnimalState();
@@ -60,9 +60,9 @@ class _monitoreAnimalState extends State<monitoreAnimal> {
             child: IndexedStack(
               index: index - 1,
               children: [ 
-                salud(), 
+                salud(mascotaSeleccionadaIdHistorial: widget.mascotaSeleccionadaIdHistorial), 
                 Actividad(), 
-                ubicacionPet(), 
+                UbicacionPet(), 
                 alertas(),
               ],
             ),

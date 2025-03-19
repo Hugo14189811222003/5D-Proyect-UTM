@@ -238,7 +238,7 @@ class _RegisterState extends State<Register> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
                                           child: TextFormField(
-                                            maxLength: 15,
+                                            maxLength: 75,
                                             style: TextStyle(color: _isFocus ? Colors.white :Color.fromARGB(255, 71, 71, 71)),
                                             focusNode: focusNode_,
                                             controller: nameController,

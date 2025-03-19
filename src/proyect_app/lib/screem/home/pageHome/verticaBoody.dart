@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proyect_app/Apis/recordatorioApi.dart';
 import 'package:proyect_app/models/recordatorioModelo.dart';
+import 'package:proyect_app/screem/home/pageHome/monnitorePorcentajeUnico/porcenPulso.dart';
+import 'package:proyect_app/screem/home/pageHome/monnitorePorcentajeUnico/porcenRespiracion.dart';
+import 'package:proyect_app/screem/home/pageHome/monnitorePorcentajeUnico/porcenTemperatura.dart';
 import 'package:proyect_app/screem/home/porcentaje/circlePorcentaje.dart';
 import 'package:proyect_app/screem/home/porcentaje/circlePorcentaje1.dart';
 import 'package:proyect_app/screem/home/porcentaje/circlePorcentaje2.dart';
@@ -954,7 +957,7 @@ class _verticalBodyState extends State<verticalBody> {
                                             SizedBox(
                                               width: widget.screenWidth * 0.25,
                                               height: widget.screenHeight * 0.12,
-                                              child: circlePorce(),
+                                              child: CircleAppTem(key: ValueKey(mascotaId), mascotaId: mascotaId ?? 0),
                                             ),
                                             SizedBox(height: 10,),
                                             Text("Temperatura", style: GoogleFonts.fredoka(fontSize: widget.screenWidth *0.033))
@@ -968,7 +971,7 @@ class _verticalBodyState extends State<verticalBody> {
                                             SizedBox(
                                               width: widget.screenWidth * 0.25,
                                               height: widget.screenHeight * 0.12,
-                                              child: circlePorce1(),
+                                              child: circlePorce1Pulso(key: ValueKey(mascotaId),mascotaId: mascotaId ?? 0),
                                             ),
                                             SizedBox(height: 10,),
                                             Text("Pulso", style: GoogleFonts.fredoka(fontSize: widget.screenWidth *0.033))
@@ -982,7 +985,7 @@ class _verticalBodyState extends State<verticalBody> {
                                             SizedBox(
                                               width: widget.screenWidth * 0.25,
                                               height: widget.screenHeight * 0.12,
-                                              child: circlePorce2(),
+                                              child: circlePorce2Res(key: ValueKey(mascotaId) ,mascotaId: mascotaId ?? 0),
                                             ),
                                             SizedBox(height: 10,),
                                             Text("Respiración", style: GoogleFonts.fredoka(fontSize: widget.screenWidth *0.033))

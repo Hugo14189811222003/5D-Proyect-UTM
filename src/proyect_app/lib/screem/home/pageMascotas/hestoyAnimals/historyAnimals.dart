@@ -132,27 +132,21 @@ class _historyAnimalsState extends State<historyAnimals> {
                       );
                     }
                   ),
-                  FutureBuilder<String>(
-                    future: obtenerGenero(widget.mascota.id),
-                    builder: (context, snapshot) {
-                      String generoMascota = snapshot.data ?? "Desconocido";
-                      return Container(
+                  Container(
                         height: MediaQuery.of(context).size.height * 0.05,
                         width: MediaQuery.of(context).size.width * 0.1,
                         decoration: BoxDecoration(
-                          color: generoMascota == "Hembra" ? const Color.fromARGB(255, 245, 118, 173) 
-                          : generoMascota == "Macho" ? Colors.blue : Colors.grey,
+                          color: widget.mascota.genero == "Hembra" ? const Color.fromARGB(255, 245, 118, 173) 
+                          : widget.mascota.genero == "Macho" ? Colors.blue : Colors.grey,
                           borderRadius: BorderRadius.circular(10),
                           
                         ),
                         child: Icon(
-                          generoMascota == "Hembra" ? Icons.woman : generoMascota == "Macho" ? Icons.man : Icons.pets, 
+                          widget.mascota.genero == "Hembra" ? Icons.woman : widget.mascota.genero == "Macho" ? Icons.man : Icons.pets, 
                           color: Colors.white, 
                           size: MediaQuery.of(context).size.width * 0.07
                         ),
-                      );
-                    }
-                  )
+                      )
                 ],
               ),
             ),
@@ -202,7 +196,7 @@ class _historyAnimalsState extends State<historyAnimals> {
                                       fontWeight: FontWeight.w200
                                       )
                                     ),
-                                    Text(calcularEdad(widget.mascota.fechaNacimiento), style: GoogleFonts.fredoka(
+                                    Text(widget.mascota.fechaNacimiento, style: GoogleFonts.fredoka(
                                       color: const Color.fromARGB(255, 105, 89, 165), 
                                       fontSize: 12, 
                                       fontWeight: FontWeight.w400
@@ -221,13 +215,13 @@ class _historyAnimalsState extends State<historyAnimals> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("Peso", style: GoogleFonts.fredoka(
+                                    Text("Color", style: GoogleFonts.fredoka(
                                       color: Colors.black, 
                                       fontSize: 17, 
                                       fontWeight: FontWeight.w200
                                       )
                                     ),
-                                    Text(widget.mascota.peso.toString(), style: GoogleFonts.fredoka(
+                                    Text(widget.mascota.color, style: GoogleFonts.fredoka(
                                       color: const Color.fromARGB(255, 105, 89, 165), 
                                       fontSize: 12, 
                                       fontWeight: FontWeight.w400
@@ -252,7 +246,7 @@ class _historyAnimalsState extends State<historyAnimals> {
                                       fontWeight: FontWeight.w200
                                       )
                                     ),
-                                    Text("80 cm", style: GoogleFonts.fredoka(
+                                    Text(widget.mascota.tamano, style: GoogleFonts.fredoka(
                                       color: const Color.fromARGB(255, 105, 89, 165), 
                                       fontSize: 12, 
                                       fontWeight: FontWeight.w400
@@ -345,7 +339,7 @@ class _historyAnimalsState extends State<historyAnimals> {
                                   onTap:() {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => monitoreAnimal())
+                                      MaterialPageRoute(builder: (context) => monitoreAnimal(mascotaSeleccionadaIdHistorial: widget.mascota.id,))
                                     );
                                   },
                                 )

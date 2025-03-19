@@ -4,13 +4,13 @@ import 'package:proyect_app/Apis/apiMonitoreo/apiMonitoreo.dart';
 import 'package:proyect_app/models/monitoreo/modeloMonitoreo.dart';
 
 void main() {
-  runApp(const circlePorce2(mascotaId: 1)); // Aquí pasas el ID de la mascota
+  runApp(const circlePorce2Res(mascotaId: 1)); // Aquí pasas el ID de la mascota
 }
 
-class circlePorce2 extends StatelessWidget {
+class circlePorce2Res extends StatelessWidget {
   final int mascotaId;
 
-  const circlePorce2({super.key, required this.mascotaId});
+  const circlePorce2Res({super.key, required this.mascotaId});
 
   @override
   Widget build(BuildContext context) {
@@ -46,23 +46,22 @@ class _MonitoreoScreenState extends State<MonitoreoScreen> {
   }
 
   Future<void> fetchMonitoreo() async {
-    List<Monitoreo> monitoreos = await getMonitoreo(1); // Obtener datos de la API
+  List<Monitoreo> monitoreos = await getMonitoreo(1); // Obtener datos de la API
 
-    // Filtrar los datos por mascotaId
-    List<Monitoreo> filtrados = monitoreos.where((m) => m.mascotaId == widget.mascotaId).toList();
+  List<Monitoreo> filtrados = monitoreos.where((m) => m.mascotaId == widget.mascotaId).toList();
 
-    if (filtrados.isNotEmpty) {
-      setState(() {
-        respiracion = filtrados.last.respiracion.toDouble(); // Última respiración de esa mascota
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-        respiracion = 0.0; // Si no hay datos, respiración en 0
-      });
-    }
+  if (mounted) { // 👈 Verificar que el widget sigue montado antes de llamar setState()
+    setState(() {
+      if (filtrados.isNotEmpty) {
+        respiracion = filtrados.last.respiracion.toDouble(); // Última temperatura registrada
+      } else {
+        respiracion = 0.0; // Si no hay datos, temperatura en 0
+      }
+      isLoading = false;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

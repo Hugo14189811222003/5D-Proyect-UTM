@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:proyect_app/Apis/apiMonitoreo/apiMonitoreo.dart';
 import 'dart:math';
+import 'package:proyect_app/models/monitoreo/modeloMonitoreo.dart';
 
-void main() {
-  runApp(const circlePorce());
-}
+class CircleApp extends StatelessWidget {
+  final int mascotaId;
 
-class circlePorce extends StatelessWidget {
-  const circlePorce({super.key});
+  const CircleApp({super.key, required this.mascotaId}); // Recibiendo el ID de la mascota
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +14,62 @@ class circlePorce extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.white,
-        body: Container(
-          child: TemperatureCircle(temperature: 0, minTemp: 0, maxTemp: 100),
+        body: Center(
+          child: MonitoreoScreen(mascotaId: mascotaId), // Pasando el mascotaId a MonitoreoScreen
         ),
       ),
+    );
+  }
+}
+
+class MonitoreoScreen extends StatefulWidget {
+  final int mascotaId; // Recibiendo el ID de la mascota
+
+  const MonitoreoScreen({super.key, required this.mascotaId}); // Recibiendo el ID en el constructor
+
+  @override
+  _MonitoreoScreenState createState() => _MonitoreoScreenState();
+}
+
+class _MonitoreoScreenState extends State<MonitoreoScreen> {
+  double temperatura = 0.0; // Inicializar temperatura en 0
+  bool isLoading = true; // Estado de carga
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMonitoreo(); // Llamar a la API al iniciar
+  }
+
+  Future<void> fetchMonitoreo() async {
+    List<Monitoreo> monitoreos = await getMonitoreo(1); // Obtener datos de la API
+
+    // Filtrar los datos por mascotaId
+    List<Monitoreo> filtrados = monitoreos.where((m) => m.mascotaId == widget.mascotaId).toList();
+
+    if (filtrados.isNotEmpty) {
+      setState(() {
+        temperatura = filtrados.last.temperatura.toDouble(); // Última temperatura de esa mascota
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+        temperatura = 0.0; // Si no hay datos, temperatura en 0
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: isLoading
+          ? CircularProgressIndicator() // Mostrar carga mientras se obtienen los datos
+          : TemperatureCircle(
+              temperature: temperatura, // Mostrar la temperatura de la mascota seleccionada
+              minTemp: 0,
+              maxTemp: 100,
+            ),
     );
   }
 }
@@ -69,10 +121,7 @@ class CirclePercentagePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     Paint foregroundPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [const Color.fromARGB(255, 14, 203, 162)],
-        stops: const [1.0],
-      ).createShader(Rect.fromCircle(center: size.center(Offset.zero), radius: size.width / 2))
+      ..color = Colors.green
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10.0
       ..strokeCap = StrokeCap.round;

@@ -23,6 +23,14 @@ class Crearmascota extends StatefulWidget {
 }
 
 class _CrearmascotaState extends State<Crearmascota> {
+  final List<String> razasCat = [
+    // Grupo 1
+    "Ragdoll", "Gato persa", "Sphynx", "Gato siamés",
+    // Grupo 2
+    "Gato Exótico", "Maine Coon", "Scottish Fold", "Abisinio",
+    // Grupo 3
+    "Cornish rex", "Gato exótico", "British Shorthair", "American Shorthair"
+  ];
   final List<String> razas = [
     // Grupo 1: Pastores y boyeros
     "Pastor Alemán", "Border Collie", "Pastor Belga", "Pastor Australiano",
@@ -63,7 +71,6 @@ class _CrearmascotaState extends State<Crearmascota> {
   TextEditingController _razaController = TextEditingController();
   TextEditingController _generoController = TextEditingController();
   TextEditingController _colorController = TextEditingController();
-  TextEditingController _pesoController = TextEditingController();
   TextEditingController _tamanoController = TextEditingController();
   TextEditingController _fechaController = TextEditingController();
   final FocusNode focusNode_ = FocusNode();
@@ -82,6 +89,10 @@ class _CrearmascotaState extends State<Crearmascota> {
   bool _isFocusPeso = false;
   bool _isFocusTamano = false;
   bool _isFocusFechaDeNacimiento = false;
+  String? selectedSize;
+  String? selectedPeso;
+
+
 
   Future<void> guardarGenero(int mascotaId, String genero) async {
   final prefs = await SharedPreferences.getInstance();
@@ -133,26 +144,8 @@ class _CrearmascotaState extends State<Crearmascota> {
     });
   }
 
-  void _selectDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(), // Fecha inicial
-      firstDate: DateTime(1900), // Fecha más antigua seleccionable
-      lastDate: DateTime(2101), // Fecha más futura seleccionable
-    );
-
-    if (pickedDate != null) {
-      // Formato de la fecha
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-      setState(() {
-        _fechaController.text = formattedDate; // Actualiza el campo con la fecha seleccionada.
-        _isFocusFechaDeNacimiento = false; // Para desactivar el focus después de la selección
-      });
-    }
-  }
-
   Future<void> inserMascota() async {
-    if(_nameController.text.isEmpty || _especieController.text.isEmpty || _razaController.text.isEmpty || _generoController.text.isEmpty || _colorController.text.isEmpty || _pesoController.text.isEmpty || _tamanoController.text.isEmpty || _fechaController.text.isEmpty){
+    if(_nameController.text.isEmpty || _especieController.text.isEmpty || _razaController.text.isEmpty || _generoController.text.isEmpty || _colorController.text.isEmpty || _tamanoController.text.isEmpty || _fechaController.text.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color.fromARGB(255, 255, 191, 0),
@@ -167,13 +160,12 @@ class _CrearmascotaState extends State<Crearmascota> {
     } else {
       if(_globalKeyForm1.currentState!.validate()){
         String nombre = _nameController.text;
-        String fechaDeNacimiento = _fechaController.text;
         String especie = _especieController.text;
         String raza = _razaController.text;
-        int peso = int.tryParse(_pesoController.text) ?? 0;
-        DateFormat formato = DateFormat("dd-MM-yyyy");
-        DateTime fechaNacimiento = formato.parse(fechaDeNacimiento);
+        String fechaNacimiento = _fechaController.text;
         String genero = _generoController.text;
+        String tamano = _tamanoController.text;
+        String colors = _colorController.text;
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? userIdString = prefs.getString('id');
@@ -183,12 +175,14 @@ class _CrearmascotaState extends State<Crearmascota> {
         final String? imageUrl = await uploadImage(_image!);
         if(imageUrl != null) {
           PostMascota mascota = PostMascota(
+            color: colors,
+            tamano: tamano,
             usuarioId: userId ?? 0,
             nombre: nombre,
             fechaNacimiento: fechaNacimiento,
             especie: especie,
             raza: raza,
-            peso: peso,
+            peso: 0,
             imagenURL: imageUrl,
             genero: genero
           );
@@ -213,7 +207,6 @@ class _CrearmascotaState extends State<Crearmascota> {
           _razaController.clear();
           _generoController.clear();
           _colorController.clear();
-          _pesoController.clear();
           _tamanoController.clear();
           _fechaController.clear();
           _generoController.clear();
@@ -363,10 +356,15 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       });
                                     },
                                     itemBuilder: (BuildContext context) {
-                                      return razas.map((String raza) {
+                                      return _especieController.text == "Perro" ? razas.map((String raza) {
                                         return PopupMenuItem<String>(
                                           value: raza,
                                           child: Text(raza),
+                                        );
+                                      }).toList() : razasCat.map((String razaCat) {
+                                        return PopupMenuItem<String>(
+                                          value: razaCat,
+                                          child: Text(razaCat),
                                         );
                                       }).toList();
                                     },
@@ -454,38 +452,7 @@ class _CrearmascotaState extends State<Crearmascota> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10,),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      color: _isFocusPeso ? const Color.fromARGB(255, 226, 226, 226) : const Color.fromARGB(255, 255, 255, 255),
-                                      border: Border.all(color: const Color.fromARGB(255, 0, 77, 58), width: 1),
-                                      borderRadius: BorderRadius.circular(10)
-                                    ),
-                                    child: TextFormField(
-                                      maxLength: 3,
-                                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                      controller: _pesoController,
-                                      focusNode: focusNode6_,
-                                      style: TextStyle(),
-                                      decoration: InputDecoration(
-                                        hintText: "Peso",
-                                        hintStyle: TextStyle(color: _isFocusPeso ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(left: 0.0),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _isFocusPeso = true;
-                                        });
-                                      },
-                                      validator: (value) {
-                                        return(value != null) ? null : "Esta vacio, ingrese datos";
-                                      },
-                                    ),
-                                  ),
-                                ),
+                                SizedBox(width: 10,)
                               ],
                             ),
                             SizedBox(height: 12,),
@@ -499,27 +466,38 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       border: Border.all(color: const Color.fromARGB(255, 0, 77, 58), width: 1),
                                       borderRadius: BorderRadius.circular(10)
                                     ),
-                                    child: TextFormField(
-                                      maxLength: 3,
-                                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                      controller: _tamanoController,
-                                      focusNode: focusNode7_,
-                                      style: TextStyle(),
-                                      decoration: InputDecoration(
-                                        hintText: "Tamaño en cm",
-                                        hintStyle: TextStyle(color: _isFocusTamano ? const Color.fromARGB(255, 72, 72, 72) : Color.fromARGB(255, 71, 71, 71)),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(left: 0.0),
-                                      ),
-                                      onTap: () {
+                                    child: DropdownButtonFormField<String>(
+                                      value: selectedSize, // Variable que almacena el valor seleccionado
+                                      items: <String>['Pequeño', 'Mediano', 'Grande']
+                                          .map<DropdownMenuItem<String>>((String size) {
+                                        return DropdownMenuItem<String>(
+                                          value: size,
+                                          child: Text(size),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
                                         setState(() {
-                                          _isFocusTamano = true;
+                                          _tamanoController.text = newValue!;
                                         });
                                       },
+                                      decoration: InputDecoration(
+                                        hintText: "Tamaño",
+                                        hintStyle: TextStyle(
+                                          color: _isFocusTamano
+                                              ? const Color.fromARGB(255, 72, 72, 72)
+                                              : const Color.fromARGB(255, 71, 71, 71),
+                                        ),
+                                        border: InputBorder.none, // Sin contorno
+                                        contentPadding: EdgeInsets.only(left: 0.0),
+                                      ),
                                       validator: (value) {
-                                        return(value != null) ? null : "Esta vacio, ingrese datos";
+                                        if (value == null || value.isEmpty) {
+                                          return "Seleccione un tamaño";
+                                        }
+                                        return null;
                                       },
                                     ),
+
                                   ),
                                 ),
                                 SizedBox(width: 10),
@@ -534,6 +512,7 @@ class _CrearmascotaState extends State<Crearmascota> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: TextFormField(
+                                      maxLength: 10,
                                       controller: _fechaController,
                                       focusNode: focusNode8_,
                                       style: TextStyle(),
@@ -549,7 +528,6 @@ class _CrearmascotaState extends State<Crearmascota> {
                                         setState(() {
                                           _isFocusFechaDeNacimiento = true;
                                         });
-                                        _selectDate(context); // Abre el DatePicker cuando se toca el campo
                                       },
                                       validator: (value) {
                                         return value != null && value.isNotEmpty

@@ -53,9 +53,11 @@ class _VerticalguiasbodyState extends State<Verticalguiasbody> {
     } catch (err) {
       print('Problemas al cargar los datos, error: ${err}');
     } finally{
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted){
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
